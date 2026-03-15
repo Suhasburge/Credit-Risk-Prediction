@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-risk-api
+  namespace: credit-risk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: credit-risk-api
+  template:
+    metadata:
+      labels:
+        app: credit-risk-api
+    spec:
+      containers:
+        - name: credit-risk-api
+          image: suhasburge/credit-risk-api:1.0
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow-service:5000"
+
+          volumeMounts:
+            - name: mlflow-storage
+              mountPath: /mlruns
+
+      volumes:
+        - name: mlflow-storage
+          persistentVolumeClaim:
+            claimName: mlflow-pvc
